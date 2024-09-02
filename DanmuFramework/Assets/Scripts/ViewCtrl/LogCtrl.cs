@@ -30,7 +30,7 @@ public class LogCtrl : AbstractController
         var timestamp = DateTime.Now.ToString("yyyyMMddhhmmss");
         localLogName = $"output_{timestamp}.mlog";
         this.RegisterEvent<UploadLogEvent>(OnUploadLog);
-        this.RegisterEvent<GamePrepareEvent>(OnGamePrepare);
+        this.RegisterEvent<GameConfigInitEvent>(OnGameInit);
     }
 
     private void Start()
@@ -51,9 +51,9 @@ public class LogCtrl : AbstractController
             _logUploader.CompressionAndUploadLog();
     }
 
-    private void OnGamePrepare(GamePrepareEvent obj)
+    private void OnGameInit(GameConfigInitEvent obj)
     {
-        _logUploader = new LogUploader(ServerUrl, upLogFileName, localLogName, _headers);
+        _logUploader = new LogUploader(ServerUrl,LogFolder, upLogFileName, localLogName, _headers);
     }
 
     private void OnUploadLog(UploadLogEvent obj)

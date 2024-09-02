@@ -16,15 +16,16 @@ public class LogUploader
     private readonly StringBuilder _logBuffer = new();
     private readonly object _logBufferLock = new();
     private readonly string _logFilePath;
-    private readonly string _logFolder=Application.persistentDataPath;
+    private readonly string _logFolder;
     private readonly string _serverURL;
     private DateTime _lastWriteTime;
 
-    public LogUploader(string serverURL, string upLogFileName, string localLogName,
+    public LogUploader(string serverUrl, string logFolder, string upLogFileName, string localLogName,
         Dictionary<string, string> upLogHeaders)
     {
-        this._serverURL = serverURL;
+        this._serverURL = serverUrl;
         _upLogFileName = upLogFileName;
+        _logFolder = logFolder;
         _upLogHeaders = upLogHeaders;
         DeleteOldLogs();
         _logFilePath = $"{_logFolder}/{localLogName}";
@@ -162,11 +163,11 @@ public class LogUploader
     /// </summary>
     public void CompressionAndUploadLog()
     {
-        var logPath = Application.persistentDataPath + "/Player.log";
+        var logPath = _logFolder + "/Player.log";
 
         if (File.Exists(logPath))
         {
-            var tempFilePath = Application.persistentDataPath + "/Temp_Player_Log_Copy.log";
+            var tempFilePath = _logFolder + "/Temp_Player_Log_Copy.log";
             File.Copy(logPath, tempFilePath, true);
             UploadLog(tempFilePath);
             File.Delete(tempFilePath);

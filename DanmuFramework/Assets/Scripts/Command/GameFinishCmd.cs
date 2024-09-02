@@ -7,6 +7,7 @@ public class GameFinishCmd : AbstractCommand
 {
     protected override void OnExecute()
     {
+        DebugCtrl.Log("游戏结束...");
         this.SendEvent<GameFinishEvent>();
     }
 }
