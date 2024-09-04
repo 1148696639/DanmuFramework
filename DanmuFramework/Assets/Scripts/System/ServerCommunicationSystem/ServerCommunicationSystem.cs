@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,7 +26,7 @@ public interface IServerCommunicationSystem : ISystem
     /// </summary>
     /// <param name="endpoint">API 端点路径。</param>
     /// <param name="callback">请求完成后的回调，包括服务器响应字符串、成功状态和错误信息。</param>
-    void GetRequest(string endpoint, Action<bool, string> callback);
+    void GetRequestAsync(string endpoint, Action<bool, string> callback);
 
     /// <summary>
     ///     发起 POST 请求到指定的 API 端点，并附带 JSON 数据。
@@ -33,7 +34,7 @@ public interface IServerCommunicationSystem : ISystem
     /// <param name="endpoint">API 端点路径。</param>
     /// <param name="jsonData">要发送的 JSON 数据。</param>
     /// <param name="callback">请求完成后的回调，包括服务器响应字符串、成功状态和错误信息。</param>
-    void PostRequest(string endpoint, string jsonData, Action<bool, string> callback);
+    void PostRequestAsync(string endpoint, string jsonData, Action<bool, string> callback);
 
     /// <summary>
     ///     发送信息给服务器，通用方法
@@ -67,13 +68,20 @@ public interface IServerCommunicationSystem : ISystem
     ///     无封装，无返回的post请求
     /// </summary>
     /// <param name="path"></param>
-    void SendPost(string path);
+    void SendPostNoBack(string path);
 
     /// <summary>
     ///     获取服务器消息队列
     /// </summary>
     /// <returns></returns>
     BetterQueue<string> GetServerMsgQueue();
+
+    /// <summary>
+    ///  Get请求,同步
+    /// </summary>
+    /// <param name="endpoint"></param>
+    /// <param name="callback"></param>
+    void GetRequest(string endpoint, Action<bool, string> callback);
 }
 
 /// <summary>
@@ -116,18 +124,24 @@ public class ServerCommunicationSystem : AbstractSystem, IServerCommunicationSys
 
     public BindableProperty<bool> WebSocketIsConnected { get; set; } = new();
 
+    public void GetRequestAsync(string endpoint, Action<bool, string> callback)
+    {
+        var path = _baseUrl + endpoint;
+        DebugCtrl.Log($"GET请求: {path}");
+        _webRequestUtils.GetRequestAsync(path, responseStr => { HandleResponse(responseStr, callback); });
+    }
+
     public void GetRequest(string endpoint, Action<bool, string> callback)
     {
         var path = _baseUrl + endpoint;
         DebugCtrl.Log($"GET请求: {path}");
-        _webRequestUtils.GetRequest(path, responseStr => { HandleResponse(responseStr, callback); });
+         _webRequestUtils.GetRequest(path, responseStr => { HandleResponse(responseStr, callback); });
     }
-
-    public void PostRequest(string endpoint, string jsonData, Action<bool, string> callback)
+    public void PostRequestAsync(string endpoint, string jsonData, Action<bool, string> callback)
     {
         var path = _baseUrl + endpoint;
         DebugCtrl.Log($"POST请求: {path}，Data: {jsonData}");
-        _webRequestUtils.PostRequest(path, jsonData, responseStr => { HandleResponse(responseStr, callback); });
+        _webRequestUtils.PostRequestAsync(path, jsonData, responseStr => { HandleResponse(responseStr, callback); });
     }
 
     public void SendMessageToWebsocket(string method, string data = null)
@@ -146,7 +160,7 @@ public class ServerCommunicationSystem : AbstractSystem, IServerCommunicationSys
         dataDictionary.Add("roomId", this.SendQuery(new GameRoomIdQuery()));
         var data = JsonConvert.SerializeObject(dataDictionary);
         var path = "/java/api/game/" + methodName;
-        PostRequest(path, data, (isSuccess, responseData) =>
+        PostRequestAsync(path, data, (isSuccess, responseData) =>
         {
             if (isSuccess)
             {
@@ -168,7 +182,7 @@ public class ServerCommunicationSystem : AbstractSystem, IServerCommunicationSys
         var path = "/java/" + methodName;
         path += $"?currentKey={this.SendQuery(new GameKeyQuery())}&roomId={this.SendQuery(new GameRoomIdQuery())}";
         if (data != null) path += "&" + string.Join("&", data.Select(x => x.Key + "=" + x.Value));
-        GetRequest(path, (isSuccess, responseData) =>
+        GetRequestAsync(path, (isSuccess, responseData) =>
         {
             if (isSuccess)
             {
@@ -183,7 +197,7 @@ public class ServerCommunicationSystem : AbstractSystem, IServerCommunicationSys
         });
     }
 
-    public void SendPost(string path)
+    public void SendPostNoBack(string path)
     {
         _webRequestUtils.Post(path);
     }

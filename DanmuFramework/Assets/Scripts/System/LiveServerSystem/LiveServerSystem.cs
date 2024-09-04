@@ -38,7 +38,7 @@ public class LiveServerSystem : AbstractSystem, ILiveServerSystem
             { "token", token },
             { "clientVersion", version }
         };
-        this.GetSystem<IServerCommunicationSystem>().PostRequest("", JsonConvert.SerializeObject(body), Handheld);
+        this.GetSystem<IServerCommunicationSystem>().PostRequestAsync("", JsonConvert.SerializeObject(body), Handheld);
     }
 
 
