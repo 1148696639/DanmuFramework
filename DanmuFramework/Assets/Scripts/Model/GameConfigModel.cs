@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using QFramework;
-using UnityEngine;
 
 internal interface IGameConfigModel : IModel
 {
@@ -38,12 +36,11 @@ internal interface IGameConfigModel : IModel
     ///     websocket链接地址
     /// </summary>
     string WebSocketUrl { get; set; }
-    
+
     /// <summary>
-    ///  直播平台
+    ///     直播平台
     /// </summary>
     GamePlatformEnum GamePlatform { get; set; }
-
 }
 
 public enum GamePlatformEnum
@@ -52,6 +49,7 @@ public enum GamePlatformEnum
     小7,
     KS
 }
+
 public class GameConfigModel : AbstractModel, IGameConfigModel
 {
     public string GameName { get; set; }
@@ -66,6 +64,5 @@ public class GameConfigModel : AbstractModel, IGameConfigModel
 
     protected override void OnInit()
     {
-
     }
 }
