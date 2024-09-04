@@ -100,7 +100,7 @@ public class test : AbstractController
         isStart = true;
         while (isStart)
         {
-            var res= await _tencentCosUtility.GetBulletResult("res-1312097821", "测试/", true);
+            var res= await _tencentCosUtility.GetBulletResult("res-1312097821", "测试", true);
             res.listBucket.commonPrefixesList.ForEach(item =>
             {
                Debug.Log(item.prefix);

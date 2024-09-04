@@ -26,7 +26,7 @@ public class PerformanceTester : MonoBehaviour
         float referenceCoefficient = (float)_below60FpsCount / _frameCount;
         Debug.Log($"测试结束 - 平均帧率: {_frameCount / _timeElapsed:F2} FPS");
         Debug.Log($"低于60帧的次数: {_below60FpsCount}");
-        Debug.Log($"参考系数: {referenceCoefficient*100}%");
+        Debug.Log($"参考系数: {referenceCoefficient*100:F3}%");
     }
 
     // 每帧更新

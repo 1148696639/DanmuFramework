@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace BetterPoolManager
 {
+    /// <summary>
+    ///  会按照生成实例的顺序回收实例，用于UI对象
+    /// </summary>
     public class ObjectPool : MonoBehaviour
     {
         private readonly Queue<GameObject> availableObjects = new();

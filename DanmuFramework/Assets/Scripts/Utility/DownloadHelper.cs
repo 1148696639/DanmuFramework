@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using Random = UnityEngine.Random;
 
-public class URLHelper : MonoBehaviour
+public class DownloadHelper : MonoBehaviour
 {
     /// <summary>
     /// 下载好头像后执行回调事件
