@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -77,7 +76,7 @@ public interface IServerCommunicationSystem : ISystem
     BetterQueue<string> GetServerMsgQueue();
 
     /// <summary>
-    ///  Get请求,同步
+    ///     Get请求,同步
     /// </summary>
     /// <param name="endpoint"></param>
     /// <param name="callback"></param>
@@ -113,10 +112,9 @@ public class HttpResponseData
 
 public class ServerCommunicationSystem : AbstractSystem, IServerCommunicationSystem
 {
+    private readonly BetterQueue<string> _messageQueue = new();
     private string _baseUrl;
     private Dictionary<string, object> _headers;
-
-    private readonly BetterQueue<string> _messageQueue = new();
     private WebRequestUtils _webRequestUtils;
     private WebSocketClient _webSocketClient;
     private string _webSocketUrl;
@@ -135,8 +133,9 @@ public class ServerCommunicationSystem : AbstractSystem, IServerCommunicationSys
     {
         var path = _baseUrl + endpoint;
         DebugCtrl.Log($"GET请求: {path}");
-         _webRequestUtils.GetRequest(path, responseStr => { HandleResponse(responseStr, callback); });
+        _webRequestUtils.GetRequest(path, responseStr => { HandleResponse(responseStr, callback); });
     }
+
     public void PostRequestAsync(string endpoint, string jsonData, Action<bool, string> callback)
     {
         var path = _baseUrl + endpoint;
