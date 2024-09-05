@@ -89,24 +89,29 @@ public class WebRequestUtils
         webRequest.SendWebRequest();
     }
 
-    private void SendRequestAsync(UnityWebRequest webRequest, Action<string> callback)
+    private async void SendRequestAsync(UnityWebRequest webRequest, Action<string> callback)
+    {
+        await SendRequestAsync(webRequest);
+        callback.Invoke(webRequest.downloadHandler.text);
+    }
+
+    private async Task<string> SendRequestAsync(UnityWebRequest webRequest)
     {
         var operation = webRequest.SendWebRequest();
-        operation.completed += asyncOp =>
+        while (!operation.isDone) await Task.Yield(); // 等待异步完成
+
+        if (webRequest.result == UnityWebRequest.Result.Success)
         {
-            if (webRequest.result == UnityWebRequest.Result.Success)
-            {
-                var responseText = webRequest.downloadHandler.text;
-                callback.Invoke(responseText);
-                webRequest.Dispose(); // 释放资源
-            }
-            else
-            {
-                var error = $"{webRequest.method} Request Failed: {webRequest.error}";
-                Debug.LogError(error);
-            }
-        };
+            var responseText = webRequest.downloadHandler.text;
+            webRequest.Dispose(); // 释放资源
+            return responseText;
+        }
+
+        var error = $"{webRequest.method} Request Failed: {webRequest.error}";
+        Debug.LogError(error);
+        return null;
     }
+
 
     /// <summary>
     ///     通用的post请求
