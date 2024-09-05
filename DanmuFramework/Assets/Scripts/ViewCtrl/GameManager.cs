@@ -30,7 +30,7 @@ public class GameManager : AbstractController
     //然后获取token，点击进入按钮，发送GamePrepare事件，开始请求直播间数据，
     //获得到之后发送LiveServerOpenSuccessEvent事件，开启websocket连接，连接成功后发送GameStart事件
 
-    private void Awake()
+    private void Start()
     {
         TestInitData testData = null;
         if (IsTest)

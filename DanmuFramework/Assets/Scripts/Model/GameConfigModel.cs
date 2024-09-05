@@ -46,7 +46,7 @@ internal interface IGameConfigModel : IModel
 public enum GamePlatformEnum
 {
     Tk,
-    小7,
+    X7,
     KS
 }
 

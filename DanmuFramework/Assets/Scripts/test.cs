@@ -24,76 +24,30 @@ public class test : AbstractController
 
         if (Input.GetKeyDown(KeyCode.A))
         {
-            GetComponent<PerformanceTester>().StartTest(60);
+            // GetComponent<PerformanceTester>().StartTest(60);
 
-            /*Task.Run(aa);
-            Task.Run(bb);*/
-            this.GetSystem<IServerCommunicationSystem>().GetRequestAsync("/java/open/sts-token", (isSuccess, data) =>
-            {
-                if (isSuccess)
-                {
-                    Debug.Log(data);
-                    _tencentCosUtility = new TencentCosUtility(data);
-                    // Task.Run(TencentCosTestAsync);
-                    TencentCosTest();
-                }
-                else
-                {
-                    DebugCtrl.Log("请求sts-token失败");
-                }
-            });
-            /*aa();
-           await bb();
+            // this.GetSystem<IServerCommunicationSystem>().GetRequestAsync("/java/open/sts-token", (isSuccess, data) =>
+            // {
+            //     if (isSuccess)
+            //     {
+            //         Debug.Log(data);
+            //         _tencentCosUtility = new TencentCosUtility(data);
+            //         // Task.Run(TencentCosTestAsync);
+            //         TencentCosTest();
+            //     }
+            //     else
+            //     {
+            //         DebugCtrl.Log("请求sts-token失败");
+            //     }
+            // });
 
-             Debug.Log(Thread.CurrentThread.ManagedThreadId);
-             Task task =new Task(() => { Debug.Log(Thread.CurrentThread.ManagedThreadId); });
-             task.Start();
-            Task.Run(() => { ;});
-            Thread thread = new Thread(() => { Debug.Log(Thread.CurrentThread.ManagedThreadId); });
-            thread.Start();*/
-            /*Debug.Log(Thread.CurrentThread.ManagedThreadId);
 
-            StartCoroutine(this.GetSystem<IServerCommunicationSystem>().GetRequestAsync("/java/open/sts-token", (isSuccess, data) =>
-            {
-                if (isSuccess)
-                {
-                    Debug.Log(data);
-                    _tencentCosUtility = new TencentCosUtility(data);
-                    // Task.Run(TencentCosTestAsync);
-                    StartCoroutine(TencentCosTest());
-                }
-                else
-                {
-                    DebugCtrl.Log("请求sts-token失败");
-                }
-            }));*/
-            // aa();
-         // await   bb();
 
         }
-    }
 
-    /// <summary>
-    /// 不可等待的异步方法，会在主线程中抛出异常，导致程序崩溃
-    /// </summary>
-    async void aa()
-    {
-        Debug.Log(Thread.CurrentThread.ManagedThreadId);
-        // int.Parse("a");
-        await Task.Delay(1000);
-        transform.DOMove(transform.up * 3, 2).SetLoops(-1, LoopType.Yoyo);
-    }
 
-    /// <summary>
-    ///  可等待的异步方法，不会在主线程中抛出异常
-    /// </summary>
-    async Task bb()
-    {
-        await Task.Delay(1000);
-        Debug.Log(Thread.CurrentThread.ManagedThreadId);
-        transform.DOMove(transform.up * 3, 2).SetLoops(-1, LoopType.Yoyo);
-    }
 
+    }
 
     private async void TencentCosTest()
     {

@@ -71,6 +71,7 @@ public class LiveServerSystem : AbstractSystem, ILiveServerSystem
         else
         {
             DebugCtrl.LogWarning(response);
+            this.SendEvent<GameRestartEvent>();
         }
     }
 }

@@ -300,6 +300,7 @@ public class ServerCommunicationSystem : AbstractSystem, IServerCommunicationSys
         if (index > 10)
         {
             DebugCtrl.LogError("websocket重试上限！");
+            CloseWebSocket();
             this.SendEvent<GameRestartEvent>();
         }
     }

@@ -138,7 +138,6 @@ public class WebSocketClient
         catch (Exception e)
         {
             OnError?.Invoke(e); // 触发错误事件
-            // HandleDisconnection();
         }
     }
 
@@ -162,14 +161,14 @@ public class WebSocketClient
             await _clientWebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Disconnect",
                 _cancellationTokenSource.Token);
         }
-        _clientWebSocket.Dispose();
+        Dispose();
         OnDisconnected?.Invoke(); // 触发断开连接事件
     }
 
     /// <summary>
     /// 释放资源
     /// </summary>
-    public void Dispose()
+    private void Dispose()
     {
         _cancellationTokenSource.Cancel();
         _clientWebSocket?.Dispose();
