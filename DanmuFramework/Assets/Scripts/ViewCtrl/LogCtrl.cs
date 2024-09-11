@@ -17,9 +17,9 @@ public class LogCtrl : AbstractController
         // 获取日志文件夹路径
         LogFolder = Application.persistentDataPath;
 
-        this.RegisterEvent<UploadLogEvent>(OnUploadLog);
+        TypeEventSystem.Global.Register<UploadLogEvent>(OnUploadLog).UnRegisterWhenGameObjectDestroyed(gameObject);
 
-        this.RegisterEvent<GameConfigInitEvent>(OnGameInit);
+        this.RegisterEvent<GameConfigInitEvent>(OnGameInit).UnRegisterWhenGameObjectDestroyed(gameObject);
     }
 
     private void OnTencentServerInit(bool obj)

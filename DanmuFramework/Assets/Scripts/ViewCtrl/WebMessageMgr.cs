@@ -65,9 +65,8 @@ public class WebMessageMgr : AbstractController
     {
         switch (methodEnum)
         {
-            case "INIT_GAME":
-                // this.SendCommand(new GameInitCmd(gameData));
-                DebugCtrl.Log(data.ToString());
+            case "UPLOAD_LOG":
+                TypeEventSystem.Global.Send<UploadLogEvent>();
                 break;
         }
         yield break;
