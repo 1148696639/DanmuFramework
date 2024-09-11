@@ -51,16 +51,16 @@ public class WebSocketClient
     /// <summary>
     /// 连接到 WebSocket 服务器
     /// </summary>
-    public async Task ConnectAsync()
+    public void ConnectAsync()
     {
         _clientWebSocket = new ClientWebSocket();
-        await ConnectWebSocketLoop();
+        ConnectWebSocketLoop();
     }
 
     /// <summary>
     /// 循环尝试连接
     /// </summary>
-    private async Task ConnectWebSocketLoop()
+    private async void ConnectWebSocketLoop()
     {
         while (!_shutDown)
         {

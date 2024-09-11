@@ -118,29 +118,26 @@ public class ServerCommunicationSystem : AbstractSystem, IServerCommunicationSys
     private WebRequestUtils _webRequestUtils;
     private WebSocketClient _webSocketClient;
     private string _webSocketUrl;
-
+    private ILiveServerSystem m_liveServerSystem;
 
     public BindableProperty<bool> WebSocketIsConnected { get; set; } = new();
 
     public void GetRequestAsync(string endpoint, Action<bool, string> callback)
     {
         var path = _baseUrl + endpoint;
-        DebugCtrl.Log($"GET请求: {path}");
-        _webRequestUtils.GetRequestAsync(path, responseStr => { HandleResponse(responseStr, callback); });
+        _webRequestUtils.GetRequestAsync(path,_headers, responseStr => { HandleResponse(responseStr, callback); });
     }
 
     public void GetRequest(string endpoint, Action<bool, string> callback)
     {
         var path = _baseUrl + endpoint;
-        DebugCtrl.Log($"GET请求: {path}");
         _webRequestUtils.GetRequest(path, responseStr => { HandleResponse(responseStr, callback); });
     }
 
     public void PostRequestAsync(string endpoint, string jsonData, Action<bool, string> callback)
     {
         var path = _baseUrl + endpoint;
-        DebugCtrl.Log($"POST请求: {path}，Data: {jsonData}");
-        _webRequestUtils.PostRequestAsync(path, jsonData, responseStr => { HandleResponse(responseStr, callback); });
+        _webRequestUtils.PostRequestAsync(path,_headers, jsonData, responseStr => { HandleResponse(responseStr, callback); });
     }
 
     public void SendMessageToWebsocket(string method, string data = null)
@@ -154,21 +151,15 @@ public class ServerCommunicationSystem : AbstractSystem, IServerCommunicationSys
     public void SendMessageToPost(string methodName, string jsonData, Action<string> callbackSuccess,
         Action<string> callbackFail = null)
     {
-        var dataDictionary = JsonConvert.DeserializeObject<Dictionary<string, object>>(jsonData);
-        dataDictionary.Add("currentKey", this.SendQuery(new GameKeyQuery()));
-        dataDictionary.Add("roomId", this.SendQuery(new GameRoomIdQuery()));
-        var data = JsonConvert.SerializeObject(dataDictionary);
         var path = "/java/api/game/" + methodName;
-        PostRequestAsync(path, data, (isSuccess, responseData) =>
+        PostRequestAsync(path, jsonData, (isSuccess, responseData) =>
         {
             if (isSuccess)
             {
-                DebugCtrl.Log("请求成功！返回：" + responseData);
                 callbackSuccess?.Invoke(responseData);
             }
             else
             {
-                DebugCtrl.Log("请求失败！返回：" + responseData);
                 callbackFail?.Invoke(responseData);
             }
         });
@@ -179,18 +170,15 @@ public class ServerCommunicationSystem : AbstractSystem, IServerCommunicationSys
         Dictionary<string, object> data = null)
     {
         var path = "/java/" + methodName;
-        path += $"?currentKey={this.SendQuery(new GameKeyQuery())}&roomId={this.SendQuery(new GameRoomIdQuery())}";
-        if (data != null) path += "&" + string.Join("&", data.Select(x => x.Key + "=" + x.Value));
+        if (data != null) path += "?" + string.Join("&", data.Select(x => x.Key + "=" + x.Value));
         GetRequestAsync(path, (isSuccess, responseData) =>
         {
             if (isSuccess)
             {
-                DebugCtrl.Log("请求成功！返回：" + responseData);
                 callbackSuccess?.Invoke(responseData);
             }
             else
             {
-                DebugCtrl.Log("请求失败！返回：" + responseData);
                 callbackFail?.Invoke(responseData);
             }
         });
@@ -236,27 +224,14 @@ public class ServerCommunicationSystem : AbstractSystem, IServerCommunicationSys
     {
         this.RegisterEvent<GameConfigInitEvent>(OnGameConfigInit);
         this.RegisterEvent<GameFinishEvent>(OnGameFinish);
-        this.RegisterEvent<LiveServerOpenSuccessEvent>(OnLiveServerOpenSuccess);
+        this.RegisterEvent<GamePrepareEvent>(OnGamePrepare);
     }
 
-
-    private void OnGameConfigInit(GameConfigInitEvent obj)
+    private void OnGamePrepare(GamePrepareEvent obj)
     {
-        _baseUrl = this.SendQuery(new GameHttpUrlBaseQuery());
-        _webSocketUrl = this.SendQuery(new GameWebSocketUrlQuery());
-        _webRequestUtils = new WebRequestUtils(5);
-    }
-
-    private async void OnLiveServerOpenSuccess(LiveServerOpenSuccessEvent obj)
-    {
-        var configModel = this.GetModel<IGameConfigModel>();
-        var token = GetToken();
+        var token = m_liveServerSystem.Token;
         _headers = new Dictionary<string, object>
         {
-            { "RoomId", configModel.RoomId },
-            { "AnchorId", configModel.Key },
-            { "GameName", configModel.GameName },
-            { "Version", configModel.Version },
             { "Authorization", token }
         };
         _webSocketClient =
@@ -267,31 +242,22 @@ public class ServerCommunicationSystem : AbstractSystem, IServerCommunicationSys
         _webSocketClient.OnMessageReceived += OnWebSocketReceivedMessage;
         _webSocketClient.OnMessageSent += OnWebSocketSentMessage;
         _webSocketClient.OnReConnect += OnWebSocketReConnect;
-        await _webSocketClient.ConnectAsync();
+        _webSocketClient.ConnectAsync();
     }
+
+
+    private void OnGameConfigInit(GameConfigInitEvent obj)
+    {
+        _baseUrl = this.SendQuery(new GameHttpUrlBaseQuery());
+        _webSocketUrl = this.SendQuery(new GameWebSocketUrlQuery());
+        _webRequestUtils = new WebRequestUtils(5);
+        m_liveServerSystem = this.GetSystem<ILiveServerSystem>();
+    }
+
 
     private void OnGameFinish(GameFinishEvent obj)
     {
         CloseWebSocket();
-    }
-
-    // 填充密钥
-    private static string PadKey()
-    {
-        // 默认密钥
-        var defaultKey = "kwwasd3.cn";
-
-        var paddedKey = new StringBuilder(defaultKey);
-        while (paddedKey.Length < 16) paddedKey.Append(defaultKey);
-        return paddedKey.ToString().Substring(0, 16);
-    }
-
-    private string GetToken()
-    {
-        var payload = ((DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).Ticks /
-                       TimeSpan.TicksPerMillisecond).ToString();
-        var key = PadKey();
-        return EncryptHelper.Encrypt(payload, key);
     }
 
     private void OnWebSocketReConnect(int index)

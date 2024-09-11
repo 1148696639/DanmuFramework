@@ -9,5 +9,6 @@ public class GameArchitecture : Architecture<GameArchitecture>
         RegisterSystem<ILiveServerSystem>(new LiveServerSystem());
         RegisterSystem<IServerCommunicationSystem>(new ServerCommunicationSystem());
         RegisterSystem<ITimeSystem>(new TimeSystem());
+        RegisterSystem<ITencentServerSystem>(new TencentServerSystem());
     }
 }

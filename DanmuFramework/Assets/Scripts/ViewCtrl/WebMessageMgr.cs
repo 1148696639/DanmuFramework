@@ -70,7 +70,6 @@ public class WebMessageMgr : AbstractController
                 DebugCtrl.Log(data.ToString());
                 break;
         }
-
         yield break;
     }
 

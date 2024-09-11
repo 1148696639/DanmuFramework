@@ -8,7 +8,7 @@ internal interface IGameConfigModel : IModel
     string GameName { get; set; }
 
     /// <summary>
-    ///     直播间id
+    ///     直播间id,重新开播会变
     /// </summary>
     string RoomId { get; set; }
 
@@ -40,14 +40,14 @@ internal interface IGameConfigModel : IModel
     /// <summary>
     ///     直播平台
     /// </summary>
-    GamePlatformEnum GamePlatform { get; set; }
+    GamePlatformType GamePlatform { get; set; }
 }
 
-public enum GamePlatformEnum
+public enum GamePlatformType
 {
-    Tk,
-    X7,
-    KS
+    tk,
+    x7,
+    ks
 }
 
 public class GameConfigModel : AbstractModel, IGameConfigModel
@@ -59,7 +59,7 @@ public class GameConfigModel : AbstractModel, IGameConfigModel
     public bool IsTest { get; set; }
     public string HttpUrlBase { get; set; }
     public string WebSocketUrl { get; set; }
-    public GamePlatformEnum GamePlatform { get; set; }
+    public GamePlatformType GamePlatform { get; set; }
 
 
     protected override void OnInit()

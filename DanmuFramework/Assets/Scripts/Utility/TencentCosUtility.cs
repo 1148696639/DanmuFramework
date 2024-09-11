@@ -26,7 +26,7 @@ public class TencentCosUtility : DefaultSessionQCloudCredentialProvider, IContro
     public TencentCosUtility(string data) : base(
         SerializeData(data).secretId,
         SerializeData(data).secretKey,
-        SerializeData(data).timestamp,
+        SerializeData(data).expiredTime,
         SerializeData(data).token)
     {
         InitializeCosService(SerializeData(data));
@@ -96,7 +96,7 @@ public class TencentCosUtility : DefaultSessionQCloudCredentialProvider, IContro
             {
                 var res = SerializeData(data);
                 SetQCloudCredential(res.secretId, res.secretKey,
-                    $"{res.timestamp - 10};{res.timestamp}", res.token);
+                    $"{res.startTime - 10};{res.expiredTime}", res.token);
                 tcs.SetResult(true);
             }
             else
@@ -193,11 +193,8 @@ public class TencentCosUtility : DefaultSessionQCloudCredentialProvider, IContro
             try
             {
                 var request = new PutObjectRequest(bucket, cosPath, localPath);
-                request.SetCosProgressCallback((completed, total) =>
-                {
-                    DebugCtrl.Log($"progress = {completed * 100.0 / total:##.##}%");
-                });
                 _cosXml.PutObject(request);
+                DebugCtrl.Log("上传成功");
             }
             catch (CosClientException clientEx)
             {
@@ -217,7 +214,7 @@ public class TencentCosUtility : DefaultSessionQCloudCredentialProvider, IContro
     private void InitializeCosService(StsTokenData data)
     {
         var epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        var dateTime = epoch.AddSeconds(data.timestamp);
+        var dateTime = epoch.AddSeconds(data.expiredTime);
         var localDateTime = dateTime.ToLocalTime();
         Debug.Log("过期时间为：" + localDateTime.ToString("yyyy-MM-dd HH:mm:ss"));
         _expiredTime = localDateTime;
@@ -251,7 +248,8 @@ public class TencentCosUtility : DefaultSessionQCloudCredentialProvider, IContro
     {
         public string secretId;
         public string secretKey;
-        public long timestamp;
+        public int expiredTime;
+        public int startTime;
         public string token;
     }
 }

@@ -1,71 +1,69 @@
 using System;
-using System.Collections.Generic;
+using System.IO;
 using QFramework;
 using UnityEngine;
 
 public class LogCtrl : AbstractController
 {
-    // 日志文件名字
-    public string localLogName;
-
     // 日志文件存储位置
     public string LogFolder;
 
-    public string ServerUrl;
+    private IGameConfigModel m_GameConfigModel;
 
-    public string upLogFileName;
-
-    public List<Header> Headers;
-
-    private Dictionary<string, string> _headers;
-
-    private bool _isStart;
-    private LogUploader _logUploader;
+    private ITencentServerSystem m_TencentServerSystem;
 
     private void Awake()
     {
         // 获取日志文件夹路径
         LogFolder = Application.persistentDataPath;
-        // 构造日志文件路径
-        var timestamp = DateTime.Now.ToString("yyyyMMddhhmmss");
-        localLogName = $"output_{timestamp}.mlog";
+
         this.RegisterEvent<UploadLogEvent>(OnUploadLog);
+
         this.RegisterEvent<GameConfigInitEvent>(OnGameInit);
     }
 
-    private void Start()
+    private void OnTencentServerInit(bool obj)
     {
-        //将Headers转换为Dictionary
-        _headers = new Dictionary<string, string>();
-        foreach (var header in Headers) _headers.Add(header.key, header.value);
-    }
+        LogUploadLastTime();
 
-    private void Update()
-    {
-        if (_isStart) _logUploader.Update();
-    }
-
-    private void OnApplicationQuit()
-    {
-        if (!this.SendQuery(new GameIsTestQuery()))
-            _logUploader.CompressionAndUploadLog();
     }
 
     private void OnGameInit(GameConfigInitEvent obj)
     {
-        _logUploader = new LogUploader(ServerUrl,LogFolder, upLogFileName, localLogName, _headers);
+        m_GameConfigModel = this.GetModel<IGameConfigModel>();
+        m_TencentServerSystem = this.GetSystem<ITencentServerSystem>();
+        m_TencentServerSystem.IsInit.Register(OnTencentServerInit);
+    }
+
+    private void LogUploadLastTime()
+    {
+        LogUpload("Last", "Player-prev.log");
+    }
+
+    private void LogUploadNow()
+    {
+        LogUpload("Now", "Player.log");
+    }
+
+    private void LogUpload(string type, string fileName)
+    {
+        // 构造日志文件路径
+        var timestamp = DateTime.Now.ToString("yyyyMMdHHmmss");
+        var localLogName = $"{m_GameConfigModel.Key}_{type}_{timestamp}.log";
+        var cosPath = $"{m_GameConfigModel.GameName}/Log/{DateTime.Now:yyyyMMdd}/{localLogName}";
+        var logPath = LogFolder + $"/{fileName}";
+        //检查本地是否有日志文件
+        if (!File.Exists(logPath))
+        {
+            Debug.LogError("日志文件不存在");
+            return;
+        }
+        DebugCtrl.Log("开始上传日志文件");
+        m_TencentServerSystem.PutObject("res-1312097821", cosPath, logPath);
     }
 
     private void OnUploadLog(UploadLogEvent obj)
     {
-        _logUploader.CompressionAndUploadLog();
-    }
-
-    [Serializable]
-    //用来序列化Header
-    public class Header
-    {
-        public string key;
-        public string value;
+        LogUploadNow();
     }
 }

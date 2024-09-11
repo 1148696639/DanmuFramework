@@ -15,7 +15,7 @@ public class GameManager : AbstractController
 {
     [Header("游戏配置-----------")] public string GameName;
 
-    public GamePlatformEnum GamePlatform;
+    public GamePlatformType GamePlatform;
     public string HttpUrl;
     public string WebSocketUrl;
 
@@ -29,6 +29,7 @@ public class GameManager : AbstractController
     //脚本执行顺序：先将配置赋值给GameConfigModel，然后发送GameConfigInitEvent事件，
     //然后获取token，点击进入按钮，发送GamePrepare事件，开始请求直播间数据，
     //获得到之后发送LiveServerOpenSuccessEvent事件，开启websocket连接，连接成功后发送GameStart事件
+
 
     private void Start()
     {

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -33,15 +34,19 @@ public class WebRequestUtils
     /// </summary>
     /// <param name="path"></param>
     /// <param name="callback"></param>
-    public void GetRequestAsync(string path, Action<string> callback)
+    public void GetRequestAsync(string path,Dictionary<string, object> headers, Action<string> callback)
     {
         var webRequest = UnityWebRequest.Get(path);
-        SendRequestAsync(webRequest, callback);
+        var hashCode = webRequest.GetHashCode();
+        DebugCtrl.Log($"Get异步请求: {path},HashCode:{hashCode}");
+        SendRequestAsync(webRequest,headers, callback,hashCode);
     }
-
     public void GetRequest(string path, Action<string> callback)
     {
         var webRequest = UnityWebRequest.Get(path);
+        var hashCode = webRequest.GetHashCode();
+        DebugCtrl.Log($"Get同步请求: {path},HashCode:{hashCode}");
+
         webRequest.SendWebRequest();
         while (!webRequest.isDone)
         {
@@ -66,7 +71,7 @@ public class WebRequestUtils
     /// <param name="path"></param>
     /// <param name="jsonData"></param>
     /// <param name="callback"></param>
-    public void PostRequestAsync(string path, string jsonData, Action<string> callback)
+    public void PostRequestAsync(string path,Dictionary<string, object> headers, string jsonData, Action<string> callback)
     {
         var webRequest = new UnityWebRequest(path, UnityWebRequest.kHttpVerbPOST);
         if (jsonData != null)
@@ -78,25 +83,34 @@ public class WebRequestUtils
         webRequest.downloadHandler = new DownloadHandlerBuffer();
         webRequest.SetRequestHeader("Content-Type", "application/json");
         webRequest.timeout = _timeOut;
-        SendRequestAsync(webRequest, callback);
+        var hashCode = webRequest.GetHashCode();
+        DebugCtrl.Log($"POST异步请求: {path}，Data: {jsonData},HashCode:{hashCode}");
+        SendRequestAsync(webRequest,headers, callback,hashCode);
     }
 
     public void Post(string path)
     {
-        DebugCtrl.Log("POST请求: " + path);
+        DebugCtrl.Log("POST无返回请求: " + path);
         var webRequest = new UnityWebRequest(path, UnityWebRequest.kHttpVerbPOST);
         webRequest.SetRequestHeader("Content-Type", "application/json");
         webRequest.SendWebRequest();
     }
 
-    private async void SendRequestAsync(UnityWebRequest webRequest, Action<string> callback)
+    private async void SendRequestAsync(UnityWebRequest webRequest, Dictionary<string, object> headers,
+        Action<string> callback,int hashCode)
     {
-        await SendRequestAsync(webRequest);
-        callback.Invoke(webRequest.downloadHandler.text);
+        callback.Invoke(await SendRequestAsync(webRequest,headers,hashCode));
     }
 
-    private async Task<string> SendRequestAsync(UnityWebRequest webRequest)
+    private async Task<string> SendRequestAsync(UnityWebRequest webRequest, Dictionary<string, object> headers,int hascode)
     {
+        if (headers!=null)
+        {
+            foreach (var header in headers)
+            {
+                webRequest.SetRequestHeader(header.Key, header.Value.ToString());
+            }
+        }
         var operation = webRequest.SendWebRequest();
         while (!operation.isDone) await Task.Yield(); // 等待异步完成
 
@@ -104,10 +118,11 @@ public class WebRequestUtils
         {
             var responseText = webRequest.downloadHandler.text;
             webRequest.Dispose(); // 释放资源
+            Debug.Log($"{hascode}_请求成功！返回：" + responseText);
             return responseText;
         }
 
-        var error = $"{webRequest.method} Request Failed: {webRequest.error}";
+        var error = $"{hascode}_{webRequest.method}_请求失败: {webRequest.error}";
         Debug.LogError(error);
         return null;
     }

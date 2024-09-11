@@ -4,7 +4,7 @@ using UnityEngine;
 public class GameInitCmd : AbstractCommand
 {
     private readonly string _gameName;
-    private readonly GamePlatformEnum _gamePlatform;
+    private readonly GamePlatformType _gamePlatform;
     private readonly string _httpUrl;
     private readonly string _webSocketUrl;
     private readonly TestInitData _testInitData;
@@ -17,7 +17,7 @@ public class GameInitCmd : AbstractCommand
     /// <param name="httpUrl"></param>
     /// <param name="webSocketUrl"></param>
     /// <param name="testInitData"></param>
-    public GameInitCmd(string gameName, GamePlatformEnum gamePlatform, string httpUrl, string webSocketUrl,
+    public GameInitCmd(string gameName, GamePlatformType gamePlatform, string httpUrl, string webSocketUrl,
         TestInitData testInitData = null)
     {
         _gameName = gameName;

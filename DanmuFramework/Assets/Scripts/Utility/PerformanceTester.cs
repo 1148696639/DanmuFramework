@@ -11,7 +11,7 @@ public class PerformanceTester : MonoBehaviour
     // 启动性能测试
     public void StartTest(float duration)
     {
-        Debug.Log("开始性能测试");
+        Debug.Log($"<color=green>开始性能测试...测试时间为：{duration}</color>");
         _testDuration = duration;
         _frameCount = 0;
         _timeElapsed = 0f;
@@ -24,9 +24,9 @@ public class PerformanceTester : MonoBehaviour
     {
         _isTesting = false;
         float referenceCoefficient = (float)_below60FpsCount / _frameCount;
-        Debug.Log($"测试结束 - 平均帧率: {_frameCount / _timeElapsed:F2} FPS");
-        Debug.Log($"低于60帧的次数: {_below60FpsCount}");
-        Debug.Log($"参考系数: {referenceCoefficient*100:F3}%");
+        Debug.Log($"<color=green>测试结束 - 平均帧率: {_frameCount / _timeElapsed:F2} FPS</color>");
+        Debug.Log($"<color=green>低于60帧的次数: {_below60FpsCount}</color>");
+        Debug.Log($"<color=green>参考系数: {referenceCoefficient*100:F3}%</color>");
     }
 
     // 每帧更新

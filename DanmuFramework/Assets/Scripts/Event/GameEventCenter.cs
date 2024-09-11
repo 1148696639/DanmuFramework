@@ -1,19 +1,19 @@
 /// <summary>
-///     1.游戏初始化事件,用于初始化游戏配置等非耗时操作
+///     1.游戏初始化事件（打开客户端自动执行，此时已经获得了客户端配置gameConfig信息）,用于初始化游戏配置,获取本地token开始请求直播数据服务器开通
 /// </summary>
 public struct GameConfigInitEvent
 {
 }
 
 /// <summary>
-///    2. 游戏准备事件，用于加载游戏资源，切换场景等耗时操作
+///    2. 游戏准备事件(需要登陆界面点击)，用于加载游戏资源，切换场景等耗时操作,websocket开始链接
 /// </summary>
 public struct GamePrepareEvent
 {
 }
 
 /// <summary>
-///    4. 游戏开始事件，用于正式开始游戏逻辑
+///    3. 游戏开始事件，用于正式开始游戏逻辑
 /// </summary>
 public struct GameStartEvent
 {
@@ -34,12 +34,6 @@ public struct GameRestartEvent
 {
 }
 
-/// <summary>
-///     3.直播服务器开启成功事件
-/// </summary>
-public struct LiveServerOpenSuccessEvent
-{
-}
 
 
 /// <summary>
