@@ -207,6 +207,11 @@ public class ServerCommunicationSystem : AbstractSystem, IServerCommunicationSys
 
     private void HandleResponse(string responseStr, Action<bool, string> callback)
     {
+        if (responseStr == null)
+        {
+            DebugCtrl.LogWarning("服务器返回数据为空！");
+            return;
+        }
         var response = JsonConvert.DeserializeObject<HttpResponseData>(responseStr);
         if (response != null)
         {
