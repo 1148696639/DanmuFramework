@@ -50,7 +50,7 @@ public class LogCtrl : AbstractController
         // 构造日志文件路径
         var timestamp = DateTime.Now.ToString("yyyyMMdHHmmss");
         var localLogName = $"{m_GameConfigModel.Key}_{type}_{timestamp}.log";
-        var cosPath = $"{m_GameConfigModel.GameName}/Log/{DateTime.Now:yyyyMMdd}/{localLogName}";
+        var cosPath = $"{m_GameConfigModel.GameName}/log/{DateTime.Now:yyyyMMdd}/{localLogName}";
         var logPath = LogFolder + $"/{fileName}";
         //检查本地是否有日志文件
         if (!File.Exists(logPath))
