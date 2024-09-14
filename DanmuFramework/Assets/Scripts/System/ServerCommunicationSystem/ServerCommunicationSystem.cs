@@ -16,11 +16,6 @@ public interface IServerCommunicationSystem : ISystem
     BindableProperty<bool> WebSocketIsConnected { get; set; }
 
     /// <summary>
-    ///     监听websocket发送过来的消息
-    /// </summary>
-    Action<string> OnReceiveMessageFromWebSocket { get; set; }
-
-    /// <summary>
     ///     发起 GET 请求到指定的 API 端点。
     /// </summary>
     /// <param name="endpoint">API 端点路径。</param>
@@ -193,8 +188,6 @@ public class ServerCommunicationSystem : AbstractSystem, IServerCommunicationSys
     {
         return _messageQueue;
     }
-
-    public Action<string> OnReceiveMessageFromWebSocket { get; set; }
 
     private async void CloseWebSocket()
     {

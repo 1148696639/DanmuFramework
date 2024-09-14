@@ -1,3 +1,4 @@
+using System;
 using System.Net.WebSockets;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
