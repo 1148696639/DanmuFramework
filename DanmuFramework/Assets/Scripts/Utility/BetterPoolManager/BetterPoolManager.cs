@@ -16,29 +16,28 @@ namespace BetterPoolManager
     {
         private static readonly Dictionary<string, ObjectPool> pools = new();
 
-        private static List<PoolConfig> poolConfigs;
-
-
-        [SerializeField]
-        private List<PoolConfig> PoolConfigs; // 在 Inspector 窗口中可视化对象池列表
+       public List<PoolConfig> PoolConfigs; // 在 Inspector 窗口中可视化对象池列表
 
         private void Awake()
         {
             // 在游戏启动时初始化所有对象池
             InitializePools();
-            PoolConfigs = poolConfigs;
         }
 
-        public static void SetInit(List<PoolConfig> poolConfigList)
+        /// <summary>
+        ///  自动化初始化对象池，需要先调用 SetInit 方法再将其生成到场景中
+        /// </summary>
+        /// <param name="poolConfigList"></param>
+        public void SetInit(List<PoolConfig> poolConfigList)
         {
-            poolConfigs = poolConfigList;
+            PoolConfigs = poolConfigList;
         }
 
 
         // 初始化所有对象池
         private void InitializePools()
         {
-            foreach (var config in poolConfigs)
+            foreach (var config in PoolConfigs)
                 if (config != null && config.prefab != null)
                     CreatePool(config);
         }
