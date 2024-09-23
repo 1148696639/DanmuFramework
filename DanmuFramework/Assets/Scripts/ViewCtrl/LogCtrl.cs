@@ -24,8 +24,10 @@ public class LogCtrl : AbstractController
 
     private void OnTencentServerInit(bool obj)
     {
-        LogUploadLastTime();
-
+        if (!this.SendQuery(new GameIsTestQuery()))
+        {
+            LogUploadLastTime();
+        }
     }
 
     private void OnGameInit(GameConfigInitEvent obj)
