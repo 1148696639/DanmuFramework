@@ -4,7 +4,7 @@ using UnityEngine;
 namespace BetterPoolManager
 {
     /// <summary>
-    ///  会按照生成实例的顺序回收实例，用于UI对象
+    ///     会按照生成实例的顺序回收实例，用于UI对象
     /// </summary>
     public class ObjectPool : MonoBehaviour
     {
@@ -39,7 +39,7 @@ namespace BetterPoolManager
                 obj = CreateNewObject();
 
             obj.SetActive(true);
-            obj.transform.SetParent(parent);
+            if (parent) obj.transform.SetParent(parent);
             obj.transform.SetPositionAndRotation(position, rotation);
             return obj;
         }
