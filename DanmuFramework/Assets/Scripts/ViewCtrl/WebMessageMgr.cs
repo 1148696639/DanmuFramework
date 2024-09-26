@@ -6,12 +6,18 @@ using UnityEngine;
 
 public class WebMessageMgr : AbstractController
 {
-    public float HandleFrequency;
+    private float m_HandleFrequency;
 
     private void Awake()
     {
+        this.RegisterEvent<GameConfigInitEvent>(OnGameConfigInit).UnRegisterWhenGameObjectDestroyed(gameObject);
         this.RegisterEvent<GameStartEvent>(OnGameStart).UnRegisterWhenGameObjectDestroyed(gameObject);
         this.RegisterEvent<GameFinishEvent>(OnGameFinish).UnRegisterWhenGameObjectDestroyed(gameObject);
+    }
+
+    private void OnGameConfigInit(GameConfigInitEvent obj)
+    {
+        m_HandleFrequency=this.GetModel<IGameConfigModel>().WebMessageHandleFrequency;
     }
 
     private void OnGameFinish(GameFinishEvent obj)
@@ -36,7 +42,7 @@ public class WebMessageMgr : AbstractController
                 OnReceiveMessageFromWebSocket(msg);
             }
 
-            yield return HandleFrequency == 0 ? null : new WaitForSeconds(HandleFrequency);
+            yield return m_HandleFrequency == 0 ? null : new WaitForSeconds(m_HandleFrequency);
         }
     }
 

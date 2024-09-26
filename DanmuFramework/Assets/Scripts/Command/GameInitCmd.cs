@@ -40,6 +40,7 @@ public class GameInitCmd : AbstractCommand
             gameConfigModel.WebSocketUrl = _testInitData.WebSocketUrlTest;
             gameConfigModel.RoomId = _testInitData.RoomId;
             gameConfigModel.Key = _testInitData.Key;
+            gameConfigModel.WebMessageHandleFrequency = _testInitData.WebMessageHandleFrequency;
         }
         else
         {

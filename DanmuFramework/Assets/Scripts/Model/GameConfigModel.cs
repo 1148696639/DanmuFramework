@@ -41,6 +41,11 @@ internal interface IGameConfigModel : IModel
     ///     直播平台
     /// </summary>
     GamePlatformType GamePlatform { get; set; }
+
+    /// <summary>
+    ///   web消息处理频率,0即每帧处理
+    /// </summary>
+    float WebMessageHandleFrequency { get; set; }
 }
 
 public enum GamePlatformType
@@ -60,6 +65,7 @@ public class GameConfigModel : AbstractModel, IGameConfigModel
     public string HttpUrlBase { get; set; }
     public string WebSocketUrl { get; set; }
     public GamePlatformType GamePlatform { get; set; }
+    public float WebMessageHandleFrequency { get; set; }
 
 
     protected override void OnInit()

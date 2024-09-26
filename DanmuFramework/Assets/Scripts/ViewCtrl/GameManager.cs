@@ -9,6 +9,7 @@ public class TestInitData
     public string Key;
     public string RoomId;
     public string WebSocketUrlTest;
+    public float WebMessageHandleFrequency;
 }
 
 public class GameManager : AbstractController
@@ -25,6 +26,7 @@ public class GameManager : AbstractController
     public string Key;
     public string HttpUrlTest;
     public string WebSocketUrlTest;
+    [Tooltip("处理web消息间隔时间")]public float WebMessageHandleFrequency;
 
     //脚本执行顺序：先将配置赋值给GameConfigModel，然后发送GameConfigInitEvent事件，
     //然后获取token，点击进入按钮，发送GamePrepare事件，开始请求直播间数据，
@@ -40,7 +42,8 @@ public class GameManager : AbstractController
                 RoomId = RoomId,
                 Key = Key,
                 HttpUrlTest = HttpUrlTest,
-                WebSocketUrlTest = WebSocketUrlTest
+                WebSocketUrlTest = WebSocketUrlTest,
+                WebMessageHandleFrequency = WebMessageHandleFrequency
             };
 
         this.SendCommand(new GameInitCmd(GameName, GamePlatform, HttpUrl, WebSocketUrl, testData));
