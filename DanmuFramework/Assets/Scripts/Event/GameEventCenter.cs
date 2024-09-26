@@ -54,3 +54,15 @@ public struct SceneChangeEvent
     }
     public string SceneName;
 }
+
+public struct WebMessageExecuteEvent
+{
+    public WebMessageExecuteEvent(string method, object data)
+    {
+        Method = method;
+        Data = data;
+    }
+
+    public string Method;
+    public object Data;
+}

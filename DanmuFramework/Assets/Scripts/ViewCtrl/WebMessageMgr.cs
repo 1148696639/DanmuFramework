@@ -1,4 +1,5 @@
 using System.Collections;
+using Command;
 using Newtonsoft.Json;
 using QFramework;
 using UnityEngine;
@@ -51,6 +52,7 @@ public class WebMessageMgr : AbstractController
         {
             var method = jsonData.method;
             var data = jsonData.data;
+            //这里用协程执行指令，让指令之间不需要等待
             StartCoroutine(DirectiveExecute(data, method));
         }
     }
@@ -67,6 +69,9 @@ public class WebMessageMgr : AbstractController
         {
             case "UPLOAD_LOG":
                 TypeEventSystem.Global.Send<UploadLogEvent>();
+                break;
+            default:
+                this.SendCommand(new WebMessageExecuteCmd(methodEnum, data));
                 break;
         }
         yield break;
