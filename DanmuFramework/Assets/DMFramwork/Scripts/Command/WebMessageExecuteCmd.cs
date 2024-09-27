@@ -1,21 +1,23 @@
 using QFramework;
-
-namespace Command
+namespace DMFramework
 {
-    public class WebMessageExecuteCmd : AbstractCommand
+    namespace Command
     {
-        private readonly object m_Data;
-        private readonly string m_Method;
-
-        public WebMessageExecuteCmd(string method, object data)
+        public class WebMessageExecuteCmd : AbstractCommand
         {
-            m_Method = method;
-            m_Data = data;
-        }
+            private readonly object m_Data;
+            private readonly string m_Method;
 
-        protected override void OnExecute()
-        {
-            this.SendEvent(new WebMessageExecuteEvent(m_Method, m_Data));
+            public WebMessageExecuteCmd(string method, object data)
+            {
+                m_Method = method;
+                m_Data = data;
+            }
+
+            protected override void OnExecute()
+            {
+                this.SendEvent(new WebMessageExecuteEvent(m_Method, m_Data));
+            }
         }
     }
 }

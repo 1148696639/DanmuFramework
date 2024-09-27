@@ -1,10 +1,12 @@
 
     using QFramework;
-
-    public class GameHttpUrlBaseQuery:AbstractQuery<string>
+    namespace DMFramework
     {
-        protected override string OnDo()
+        public class GameHttpUrlBaseQuery:AbstractQuery<string>
         {
-            return this.GetModel<IGameConfigModel>().HttpUrlBase;
+            protected override string OnDo()
+            {
+                return this.GetModel<IGameConfigModel>().HttpUrlBase;
+            }
         }
     }

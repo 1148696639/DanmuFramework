@@ -1,9 +1,11 @@
 using QFramework;
-
-public class GameRoomIdQuery : AbstractQuery<string>
+namespace DMFramework
 {
-    protected override string OnDo()
+    public class GameRoomIdQuery : AbstractQuery<string>
     {
-        return this.GetModel<IGameConfigModel>().RoomId;
+        protected override string OnDo()
+        {
+            return this.GetModel<IGameConfigModel>().RoomId;
+        }
     }
 }

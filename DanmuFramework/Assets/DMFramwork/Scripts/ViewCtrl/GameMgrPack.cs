@@ -1,10 +1,12 @@
 using UnityEngine;
-
-public class GameMgrPack : MonoBehaviour
+namespace DMFramework
 {
-    private void Start()
+    public class GameMgrPack : MonoBehaviour
     {
+        private void Start()
+        {
 
-        DontDestroyOnLoad(gameObject);
+            DontDestroyOnLoad(gameObject);
+        }
     }
 }

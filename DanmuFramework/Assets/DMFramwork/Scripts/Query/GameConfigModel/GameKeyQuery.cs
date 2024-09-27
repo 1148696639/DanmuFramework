@@ -1,9 +1,11 @@
 using QFramework;
-
-public class GameKeyQuery : AbstractQuery<string>
+namespace DMFramework
 {
-    protected override string OnDo()
+    public class GameKeyQuery : AbstractQuery<string>
     {
-        return this.GetModel<IGameConfigModel>().Key;
+        protected override string OnDo()
+        {
+            return this.GetModel<IGameConfigModel>().Key;
+        }
     }
 }

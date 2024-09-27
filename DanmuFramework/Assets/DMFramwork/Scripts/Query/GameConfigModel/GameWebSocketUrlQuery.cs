@@ -1,9 +1,11 @@
 using QFramework;
-
-public class GameWebSocketUrlQuery : AbstractQuery<string>
+namespace DMFramework
 {
-    protected override string OnDo()
+    public class GameWebSocketUrlQuery : AbstractQuery<string>
     {
-        return this.GetModel<IGameConfigModel>().WebSocketUrl;
+        protected override string OnDo()
+        {
+            return this.GetModel<IGameConfigModel>().WebSocketUrl;
+        }
     }
 }

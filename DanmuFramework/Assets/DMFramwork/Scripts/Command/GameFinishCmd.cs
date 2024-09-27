@@ -1,13 +1,15 @@
 using QFramework;
-
-/// <summary>
-///   游戏结束时调用
-/// </summary>
-public class GameFinishCmd : AbstractCommand
+namespace DMFramework
 {
-    protected override void OnExecute()
+    /// <summary>
+    ///   游戏结束时调用
+    /// </summary>
+    public class GameFinishCmd : AbstractCommand
     {
-        DebugCtrl.Log("游戏结束...");
-        this.SendEvent<GameFinishEvent>();
+        protected override void OnExecute()
+        {
+            DebugCtrl.Log("游戏结束...");
+            this.SendEvent<GameFinishEvent>();
+        }
     }
 }

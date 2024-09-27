@@ -1,21 +1,23 @@
 using QFramework;
-
-namespace Command
+namespace DMFramework
 {
-    public class LiveConnectCmd : AbstractCommand
+    namespace Command
     {
-        private readonly string _token;
-
-        public LiveConnectCmd(string token)
+        public class LiveConnectCmd : AbstractCommand
         {
-            _token = token;
-        }
+            private readonly string _token;
 
-        protected override void OnExecute()
-        {
-            DebugCtrl.Log("连接直播服务器...");
-            var config = this.GetModel<IGameConfigModel>();
-            this.GetSystem<ILiveServerSystem>().PostRequestGetRoomId(_token, config.GameName, config.GamePlatform);
+            public LiveConnectCmd(string token)
+            {
+                _token = token;
+            }
+
+            protected override void OnExecute()
+            {
+                DebugCtrl.Log("连接直播服务器...");
+                var config = this.GetModel<IGameConfigModel>();
+                this.GetSystem<ILiveServerSystem>().PostRequestGetRoomId(_token, config.GameName, config.GamePlatform);
+            }
         }
     }
 }

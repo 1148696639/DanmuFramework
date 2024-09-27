@@ -1,9 +1,11 @@
 using QFramework;
-
-public class WebSocketIsConnectedQuery : AbstractQuery<bool>
+namespace DMFramework
 {
-    protected override bool OnDo()
+    public class WebSocketIsConnectedQuery : AbstractQuery<bool>
     {
-        return this.GetSystem<IServerCommunicationSystem>().WebSocketIsConnected;
+        protected override bool OnDo()
+        {
+            return this.GetSystem<IServerCommunicationSystem>().WebSocketIsConnected;
+        }
     }
 }

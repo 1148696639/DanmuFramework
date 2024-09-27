@@ -1,14 +1,18 @@
-using QFramework;
 
-public class GameArchitecture : Architecture<GameArchitecture>
+using DMFramework;
+
+namespace QFramework
 {
-    protected override void Init()
+    public class GameArchitecture : Architecture<GameArchitecture>
     {
-        RegisterModel<IGameConfigModel>(new GameConfigModel());
+        protected override void Init()
+        {
+            RegisterModel<IGameConfigModel>(new GameConfigModel());
 
-        RegisterSystem<ILiveServerSystem>(new LiveServerSystem());
-        RegisterSystem<IServerCommunicationSystem>(new ServerCommunicationSystem());
-        RegisterSystem<ITimeSystem>(new TimeSystem());
-        RegisterSystem<ITencentServerSystem>(new TencentServerSystem());
+            RegisterSystem<ILiveServerSystem>(new LiveServerSystem());
+            RegisterSystem<IServerCommunicationSystem>(new ServerCommunicationSystem());
+            RegisterSystem<ITimeSystem>(new TimeSystem());
+            RegisterSystem<ITencentServerSystem>(new TencentServerSystem());
+        }
     }
 }

@@ -1,9 +1,11 @@
 using QFramework;
-
-public class GameIsTestQuery : AbstractQuery<bool>
+namespace DMFramework
 {
-    protected override bool OnDo()
+    public class GameIsTestQuery : AbstractQuery<bool>
     {
-        return this.GetModel<IGameConfigModel>().IsTest;
+        protected override bool OnDo()
+        {
+            return this.GetModel<IGameConfigModel>().IsTest;
+        }
     }
 }

@@ -1,9 +1,11 @@
 using QFramework;
-
-public class GameVersionQuery : AbstractQuery<string>
+namespace DMFramework
 {
-    protected override string OnDo()
+    public class GameVersionQuery : AbstractQuery<string>
     {
-        return this.GetModel<IGameConfigModel>().Version;
+        protected override string OnDo()
+        {
+            return this.GetModel<IGameConfigModel>().Version;
+        }
     }
 }

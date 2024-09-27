@@ -1,14 +1,16 @@
 using QFramework;
-
-/// <summary>
-///     主播点击开始游戏之后调用，进入准备阶段（期间可以动态加载资源，切换场景等），准备完成之后调用GameStartCmd
-/// </summary>
-public class GamePrepareCmd : AbstractCommand
+namespace DMFramework
 {
-    protected override void OnExecute()
+    /// <summary>
+    ///     主播点击开始游戏之后调用，进入准备阶段（期间可以动态加载资源，切换场景等），准备完成之后调用GameStartCmd
+    /// </summary>
+    public class GamePrepareCmd : AbstractCommand
     {
-        DebugCtrl.Log("游戏进入准备阶段...");
+        protected override void OnExecute()
+        {
+            DebugCtrl.Log("游戏进入准备阶段...");
 
-        this.SendEvent<GamePrepareEvent>();
+            this.SendEvent<GamePrepareEvent>();
+        }
     }
 }
