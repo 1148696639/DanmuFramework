@@ -31,6 +31,7 @@ namespace BetterPoolManager
         public void SetInit(List<PoolConfig> poolConfigList)
         {
             PoolConfigs = poolConfigList;
+            InitializePools();
         }
 
 
