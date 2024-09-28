@@ -24,7 +24,6 @@ namespace BetterPoolManager
         {
             var obj = Instantiate(prefab, transform);
             obj.SetActive(false);
-            availableObjects.Enqueue(obj);
             return obj;
         }
 
