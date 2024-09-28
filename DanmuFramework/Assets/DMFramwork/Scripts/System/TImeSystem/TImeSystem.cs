@@ -210,6 +210,10 @@ namespace DMFramework
 
         public class TimeSystemUpdateBehaviour : MonoBehaviour
         {
+            private void Awake()
+            {
+                DontDestroyOnLoad(gameObject);
+            }
             public event Action OnUpdate;
 
             private void Update()
