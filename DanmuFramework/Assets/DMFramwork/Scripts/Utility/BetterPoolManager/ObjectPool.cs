@@ -16,14 +16,26 @@ namespace BetterPoolManager
         {
             this.prefab = prefab;
 
-            for (var i = 0; i < initialSize; i++) CreateNewObject();
+            for (var i = 0; i < initialSize; i++)
+            {
+                CreateNewObjectAndInit();
+            }
+        }
+
+        /// <summary>
+        /// 用于初始化对象池
+        /// </summary>
+        void CreateNewObjectAndInit()
+        {
+            var obj = Instantiate(prefab, transform);
+            obj.SetActive(false);
+            availableObjects.Enqueue(obj);
         }
 
         // 创建新的对象并加入池中
         private GameObject CreateNewObject()
         {
             var obj = Instantiate(prefab, transform);
-            obj.SetActive(false);
             return obj;
         }
 
