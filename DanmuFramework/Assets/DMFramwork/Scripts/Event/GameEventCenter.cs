@@ -43,6 +43,13 @@ namespace DMFramework
     }
 
     /// <summary>
+    ///    直播间封禁事件
+    /// </summary>
+    public struct DisableAnchorEvent
+    {
+    }
+
+    /// <summary>
     ///   切换场景事件
     /// </summary>
     public struct SceneChangeEvent

@@ -77,8 +77,11 @@ namespace DMFramework
                 case "UPLOAD_LOG":
                     TypeEventSystem.Global.Send<UploadLogEvent>();
                     break;
+                case "DISABLE_ANCHOR":
+                    TypeEventSystem.Global.Send<DisableAnchorEvent>();
+                    break;
                 default:
-                    this.SendCommand(new WebMessageExecuteCmd(methodEnum, data));
+                    TypeEventSystem.Global.Send(new WebMessageExecuteEvent(methodEnum, data));;
                     break;
             }
             yield break;
@@ -104,7 +107,7 @@ namespace DMFramework
             /**
          * 直播间id
          */
-            public string roomId;
+            public string anchorId;
         }
     }
 }

@@ -64,6 +64,7 @@ namespace DMFramework
                 {
                     DebugCtrl.LogWarning("房间状态异常！");
                     this.SendEvent<GameRestartEvent>();
+                    return;
                 }
 
                 var configModel = this.GetModel<IGameConfigModel>();

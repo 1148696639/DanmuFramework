@@ -8,6 +8,8 @@ public class SkillCtrl : MonoBehaviour
     public enum SkillTypeEnum
     {
         直线, // 直线弹道
+        直线_可被挡, // 直线弹道
+        追踪,
         抛物线, // 抛物线弹道
         近战, // 近战攻击
         连射
@@ -16,40 +18,39 @@ public class SkillCtrl : MonoBehaviour
 
     [Header("技能类型")] public SkillTypeEnum SkillType; // 技能类型
 
-    [ShowIfEnum("SkillType", (int)SkillTypeEnum.直线)]
-    public float disCheck=0.1f;
-
     [Header("-----------基础设置------------")] [Header("前置特效预制体")]
     public GameObject PreAttackPrefab; // 前置特效预制体
 
-    [Header("前置特效生成之后第几秒触发子弹生成")] public float PreAttackDelay; // 攻击前置时间（可选）
+    [Tooltip("前置特效生成之后第几秒触发子弹生成")] public float PreAttackDelay; // 攻击前置时间（可选）
 
-    [Header("前置特效生成之后的第几秒销毁")] public float PreGoDuration;
+    [Tooltip("前置特效生成之后的第几秒销毁")] public float PreGoDuration;
 
-    [Header("弹道预制体")] public GameObject BulletPrefab; // 弹道预制体
+    [Tooltip("弹道预制体")] public GameObject BulletPrefab; // 弹道预制体
 
-    [Header("子弹发射延时")] public float BulletDelay; // 攻击前置时间（可选）
+    [Tooltip("子弹发射延时")] public float BulletDelay; // 攻击前置时间（可选）
 
-    [Header("弹道速度")] public float Speed; // 弹道速度
+    [Tooltip("弹道速度")] public float Speed; // 弹道速度
 
-    [Header("命中特效预制体")] public GameObject HitEffectPrefab; // 命中特效预制体
+    [Tooltip("命中特效预制体")] public GameObject HitEffectPrefab; // 命中特效预制体
 
-    [Header("受击特效销毁延时")] public float HitEffectDelay;
+    [Tooltip("受击特效销毁延时")] public float HitEffectDelay;
 
-    [Header("-----------抛物线------------")] [Header("抛物线运动速度")]
-    public float ParabolicSpeed;
+    [ShowIfEnum("SkillType", (int)SkillTypeEnum.抛物线)]
+    [Tooltip("抛物线速度")]public float ParabolicSpeed;
 
-    [Header("-----------连射------------")] [Header("每个子弹之间延迟")]
-    public float BulletPerDelay;
+    [ShowIfEnum("SkillType", (int)SkillTypeEnum.连射)]
+    [Tooltip("子弹之间的延迟")]public float BulletPerDelay;
 
-    [Header("连射子弹数量")] public int BulletMultipleCount;
+    [ShowIfEnum("SkillType", (int)SkillTypeEnum.连射)]
+    [Tooltip("连射子弹数量")] public int BulletMultipleCount;
 
-    [Header("子弹生成偏移范围")] public Vector3 OffsetRandomPos;
+    [ShowIfEnum("SkillType", (int)SkillTypeEnum.连射)]
+    [Tooltip("子弹生成范围")] public Vector3 OffsetRandomPos;
 
 
     private Transform _bulletParentTran;
 
-    private bool _isRuning;
+    private bool _isRunning;
 
     private bool _moveFlag = true;
 
@@ -73,13 +74,13 @@ public class SkillCtrl : MonoBehaviour
 
     private void OnDisable()
     {
-        _isRuning = false;
+        _isRunning = false;
         _multipleBulletFinishCount = 0;
     }
 
     public void Initialize(Transform target, Action<SkillTypeEnum, int> onHitTrigger,SpawnPool skillPool,SpawnPool effectPool)
     {
-        _isRuning = true;
+        _isRunning = true;
         _target = target;
         _onHitTrigger = onHitTrigger;
         _spawnPool = effectPool;
@@ -89,7 +90,6 @@ public class SkillCtrl : MonoBehaviour
         StartCoroutine(HandlePreAttackDelay());
     }
 
-    private Vector3 breakPoint;
     /// <summary>
     ///     处理直线弹道，不会被挡住直奔目标
     /// </summary>
@@ -101,15 +101,14 @@ public class SkillCtrl : MonoBehaviour
                 .transform; // 播放前置特效（可选）(播放前置特效)
             yield return new WaitForSeconds(BulletDelay); // 等待攻击前置时间
 
-            while (bulletTran && _target && !(Vector3.Distance(bulletTran.position, _target.position) < disCheck))
+            while (bulletTran && _target.gameObject.activeSelf && !(Vector3.Distance(bulletTran.position, _target.position) < 0.1f))
             {
-                if (!_isRuning) _spawnPool.Despawn(bulletTran);
+                if (!_isRunning) _spawnPool.Despawn(bulletTran);
                 bulletTran.position =
                     Vector3.MoveTowards(bulletTran.position, _target.position, Speed * Time.deltaTime);
                 yield return null;
             }
-            breakPoint = bulletTran.position;
-            if (_target) bulletTran.position = _target.position;
+            if (_target.gameObject.activeSelf) bulletTran.position = _target.position;
             StopCoroutine(nameof(HandleLinearProjectile));
             _spawnPool.Despawn(bulletTran);
         }
@@ -128,9 +127,11 @@ public class SkillCtrl : MonoBehaviour
 
             Vector3 direction = (_target.position - bulletTran.position).normalized;
 
-            while (bulletTran && _target)
+            var layerMask = 1 << _target.gameObject.layer;
+
+            while (bulletTran && _target.gameObject.activeSelf)
             {
-                if (!_isRuning)
+                if (!_isRunning)
                 {
                     _spawnPool.Despawn(bulletTran);
                     yield break;
@@ -140,10 +141,9 @@ public class SkillCtrl : MonoBehaviour
                 RaycastHit hit;
                 float stepDistance = Speed * Time.deltaTime;
 
-                if (Physics.Raycast(bulletTran.position, direction, out hit, stepDistance))
+                if (Physics.Raycast(bulletTran.position, direction, out hit, stepDistance,layerMask))
                 {
                     // 如果射线命中目标
-                    breakPoint = hit.point; // 记录命中点
                     _spawnPool.Despawn(bulletTran);
                     yield break; // 退出协程
                 }
@@ -153,7 +153,6 @@ public class SkillCtrl : MonoBehaviour
                 yield return null;
             }
 
-            breakPoint = bulletTran.position;
             StopCoroutine(nameof(HandleLinearProjectile));
             _spawnPool.Despawn(bulletTran);
         }
@@ -169,10 +168,10 @@ public class SkillCtrl : MonoBehaviour
             var bulletTran = _spawnPool.Spawn(BulletPrefab, _bulletParentTran.position, _bulletParentTran.rotation).transform;
             yield return new WaitForSeconds(BulletDelay); // 等待攻击前置时间
 
-
-            while (bulletTran && _target)
+            var layerMask = 1 << _target.gameObject.layer;
+            while (bulletTran && _target.gameObject.activeSelf)
             {
-                if (!_isRuning)
+                if (!_isRunning)
                 {
                     _spawnPool.Despawn(bulletTran);
                     yield break;
@@ -182,10 +181,9 @@ public class SkillCtrl : MonoBehaviour
                 RaycastHit hit;
                 float stepDistance = Speed * Time.deltaTime;
 
-                if (Physics.Raycast(bulletTran.position, bulletTran.forward, out hit, stepDistance))
+                if (Physics.Raycast(bulletTran.position, bulletTran.forward, out hit, stepDistance,layerMask))
                 {
                     // 如果射线命中目标
-                    breakPoint = hit.point; // 记录命中点
                     _spawnPool.Despawn(bulletTran);
                     yield break; // 退出协程
                 }
@@ -196,7 +194,6 @@ public class SkillCtrl : MonoBehaviour
                 yield return null;
             }
 
-            breakPoint = bulletTran.position;
             StopCoroutine(nameof(HandleLinearProjectile));
             _spawnPool.Despawn(bulletTran);
         }
@@ -216,9 +213,9 @@ public class SkillCtrl : MonoBehaviour
             yield return new WaitForSeconds(BulletDelay); // 等待攻击前置时间
 
             var distanceToTarget = Vector3.Distance(bulletTran.position, _target.position);
-            while (_target && _moveFlag)
+            while (_target.gameObject.activeSelf && _moveFlag)
             {
-                if (!_isRuning) _spawnPool.Despawn(bulletTran);
+                if (!_isRunning) _spawnPool.Despawn(bulletTran);
                 var targetPos = _target.position;
                 // 朝向目标, 以计算运动
                 bulletTran.LookAt(targetPos);
@@ -236,7 +233,7 @@ public class SkillCtrl : MonoBehaviour
                 yield return null;
             }
 
-            if (_target)
+            if (_target.gameObject.activeSelf)
             {
                 if (_moveFlag == false)
                 {
@@ -295,20 +292,25 @@ public class SkillCtrl : MonoBehaviour
             case SkillTypeEnum.近战:
                 yield return HandleMeleeAttack();
                 HitTarget();
-
                 break;
             case SkillTypeEnum.直线:
                 yield return HandleLinearProjectile();
                 HitTarget();
-
                 break;
             case SkillTypeEnum.抛物线:
                 yield return HandleParabolicProjectile();
                 HitTarget();
-
                 break;
             case SkillTypeEnum.连射:
                 yield return HandleMultiProjectile();
+                break;
+            case SkillTypeEnum.追踪:
+                yield return HandleTrackingMissiles();
+                HitTarget();
+                break;
+            case SkillTypeEnum.直线_可被挡:
+                yield return HandleLinearProjectileCanBeBlocked();
+                HitTarget();
                 break;
         }
     }
@@ -348,9 +350,9 @@ public class SkillCtrl : MonoBehaviour
     /// <returns></returns>
     private IEnumerator MultiProjectileMove(Transform bulletTran)
     {
-        while (_target && !(Vector3.Distance(bulletTran.position, _target.position) < 0.1f))
+        while (_target.gameObject.activeSelf && !(Vector3.Distance(bulletTran.position, _target.position) < 0.1f))
         {
-            if (!_isRuning)
+            if (!_isRunning)
             {
                 _spawnPool.Despawn(bulletTran);
                 yield break;
@@ -362,7 +364,7 @@ public class SkillCtrl : MonoBehaviour
             yield return null;
         }
 
-        if (_target) bulletTran.position = _target.position;
+        if (_target.gameObject.activeSelf) bulletTran.position = _target.position;
 
         _spawnPool.Despawn(bulletTran);
         MultipleHitTarget();
@@ -373,7 +375,7 @@ public class SkillCtrl : MonoBehaviour
     /// </summary>
     private void HitTarget()
     {
-        if (_target == null)
+        if (_target == null||!_target.gameObject.activeSelf)
         {
             _skillPool.Despawn(gameObject.transform);
             return;
@@ -381,7 +383,7 @@ public class SkillCtrl : MonoBehaviour
 
         if (HitEffectPrefab != null)
         {
-            var hitEffect = _spawnPool.Spawn(HitEffectPrefab, breakPoint, Quaternion.identity);
+            var hitEffect = _spawnPool.Spawn(HitEffectPrefab, _target.position, Quaternion.identity);
             _spawnPool.Despawn(hitEffect, HitEffectDelay);
         }
 
@@ -398,7 +400,7 @@ public class SkillCtrl : MonoBehaviour
         _multipleBulletFinishCount++;
         if (_multipleBulletFinishCount >= BulletMultipleCount) _skillPool.Despawn(gameObject.transform);
 
-        if (_target == null)
+        if (_target == null||!_target.gameObject.activeSelf)
         {
             return;
         }
