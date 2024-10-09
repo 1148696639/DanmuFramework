@@ -33,6 +33,31 @@ namespace DMFramework
         //然后获取token，点击进入按钮，发送GamePrepare事件，开始请求直播间数据，
         //获得到之后发送LiveServerOpenSuccessEvent事件，开启websocket连接，连接成功后发送GameStart事件
 
+        private void Awake()
+        {
+            TypeEventSystem.Global.Register<DisableAnchorEvent>(OnDisableAnchor).UnRegisterWhenGameObjectDestroyed(gameObject);
+           this.RegisterEvent<GameRestartEvent>(OnGameRestart).UnRegisterWhenGameObjectDestroyed(gameObject);
+        }
+
+        private void OnGameRestart(GameRestartEvent obj)
+        {
+            this.SendCommand<GameFinishCmd>();
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#elif UNITY_STANDALONE
+            Application.Quit();
+#endif
+        }
+
+        private void OnDisableAnchor(DisableAnchorEvent obj)
+        {
+            this.SendCommand<GameFinishCmd>();
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#elif UNITY_STANDALONE
+            Application.Quit();
+#endif
+        }
 
         private void Start()
         {
