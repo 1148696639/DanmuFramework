@@ -214,6 +214,7 @@ namespace DMFramework
             {
                 DontDestroyOnLoad(gameObject);
             }
+
             public event Action OnUpdate;
 
             private void Update()
