@@ -7,10 +7,11 @@ namespace DMFramework
     [Serializable]
     public class TestInitData
     {
-        public string HttpUrlTest;
         public string Key;
         public string RoomId;
+        public string HttpUrlTest;
         public string WebSocketUrlTest;
+
         /// <summary>
         /// 处理web消息间隔时间
         /// </summary>
