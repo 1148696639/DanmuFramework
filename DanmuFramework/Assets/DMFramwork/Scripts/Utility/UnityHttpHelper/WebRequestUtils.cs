@@ -112,6 +112,7 @@ namespace DMFramework
                 {
                     webRequest.SetRequestHeader(header.Key, header.Value.ToString());
                 }
+
             }
             var operation = webRequest.SendWebRequest();
             while (!operation.isDone) await Task.Yield(); // 等待异步完成

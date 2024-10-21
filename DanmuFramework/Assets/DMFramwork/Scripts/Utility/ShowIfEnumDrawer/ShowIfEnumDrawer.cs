@@ -6,36 +6,42 @@ public class ShowIfEnumDrawer : PropertyDrawer
 {
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
     {
-        // 获取 ShowIfEnumAttribute 信息
-        ShowIfEnumAttribute showIf = (ShowIfEnumAttribute)attribute;
-        SerializedProperty enumField = property.serializedObject.FindProperty(showIf.EnumFieldName);
+        var showIf = (ShowIfEnumAttribute)attribute;
+
+        // 使用完整路径查找枚举字段
+        var enumFieldPath = property.propertyPath.Replace(property.name, showIf.EnumFieldName);
+        var enumField = property.serializedObject.FindProperty(enumFieldPath);
 
         if (enumField != null && enumField.propertyType == SerializedPropertyType.Enum)
         {
-            // 检查枚举的值是否等于指定值
+            // Debug.Log($"Enum Field Value: {enumField.enumValueIndex}, Expected: {showIf.EnumValue}");
+
             if (enumField.enumValueIndex == showIf.EnumValue)
-            {
-                // 如果条件符合，显示属性
-                EditorGUI.PropertyField(position, property, label, true);
-            }
+                EditorGUI.PropertyField(position, property, label, true); // 正常绘制
         }
         else
         {
-            // 如果找不到对应的枚举字段，显示错误信息
-            EditorGUI.LabelField(position, label.text, "Error: Enum field not found or not an enum");
+            Debug.LogWarning($"Enum Field {showIf.EnumFieldName} not found or not an enum at path: {enumFieldPath}");
+            EditorGUI.PropertyField(position, property, label, true); // 正常绘制
         }
     }
 
+
     public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
     {
-        ShowIfEnumAttribute showIf = (ShowIfEnumAttribute)attribute;
-        SerializedProperty enumField = property.serializedObject.FindProperty(showIf.EnumFieldName);
+        var showIf = (ShowIfEnumAttribute)attribute;
 
-        if (enumField != null && enumField.propertyType == SerializedPropertyType.Enum && enumField.enumValueIndex == showIf.EnumValue)
-        {
-            return EditorGUI.GetPropertyHeight(property, label, true);
-        }
+        // 使用完整路径查找枚举字段
+        var enumFieldPath = property.propertyPath.Replace(property.name, showIf.EnumFieldName);
+        var enumField = property.serializedObject.FindProperty(enumFieldPath);
 
-        return 0; // 不符合条件时隐藏字段
+        // 确保字段高度正确分配
+        if (enumField != null && enumField.propertyType == SerializedPropertyType.Enum)
+            if (enumField.enumValueIndex == showIf.EnumValue)
+                // 如果条件匹配，返回字段的正常高度
+                return EditorGUI.GetPropertyHeight(property, label, true);
+
+        // 如果条件不匹配，返回 0 表示隐藏该字段
+        return 0;
     }
 }

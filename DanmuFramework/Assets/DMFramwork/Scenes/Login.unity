@@ -551,16 +551,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d82136f53f7021546b10de2f988398f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GameName: xj
-  GamePlatform: 0
-  HttpUrl: 
-  WebSocketUrl: 
+  GameData:
+    GameName: xj
+    GamePlatform: 0
+    HttpUrl: 
+    WebSocketUrl: 
+    GameExitIsRegister: 1
   IsTest: 1
-  RoomId: 1
-  Key: 1
-  HttpUrlTest: http://192.168.2.9:50005/client
-  WebSocketUrlTest: ws://192.168.2.9:50005/client/ws
-  WebMessageHandleFrequency: 0
+  TestInitData:
+    HttpUrlTest: http://192.168.2.9:50005/client
+    Key: 1
+    RoomId: 1
+    WebSocketUrlTest: ws://192.168.2.9:50005/client/ws
+    WebMessageHandleFrequency: 0
 --- !u!1 &525608123
 GameObject:
   m_ObjectHideFlags: 0

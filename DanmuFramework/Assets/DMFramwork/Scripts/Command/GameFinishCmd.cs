@@ -9,6 +9,11 @@ namespace DMFramework
         protected override void OnExecute()
         {
             DebugCtrl.Log("游戏结束...");
+            if (this.SendQuery(new GameExitIsRegisterQuery()))
+            {
+                this.GetSystem<IServerCommunicationSystem>().SendMessageToWebsocket("CLIENT_EXIT");
+            }
+
             this.SendEvent<GameFinishEvent>();
         }
     }

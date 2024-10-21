@@ -138,6 +138,11 @@ namespace DMFramework{
 
         public void SendMessageToWebsocket(string method, string data = null)
         {
+            if (!WebSocketIsConnected)
+            {
+                DebugCtrl.LogError("websocket未连接！无法发送消息！");
+                return;
+            }
             //通过websocket发送消息,method为方法名，data为数据
             var jsonStr = JsonConvert.SerializeObject(new Dictionary<string, string>
                 { { "method", method }, { "data", data } });
@@ -289,6 +294,7 @@ namespace DMFramework{
         private void OnWebSocketDisConnected()
         {
             DebugCtrl.LogWarning("websocket连接断开!");
+            WebSocketIsConnected.Value = false;
         }
 
         private void OnWebSocketConnected()

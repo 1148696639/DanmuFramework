@@ -1,40 +1,30 @@
 using QFramework;
 using UnityEngine;
+
 namespace DMFramework
 {
     public class GameInitCmd : AbstractCommand
     {
-        private readonly string _gameName;
-        private readonly GamePlatformType _gamePlatform;
-        private readonly string _httpUrl;
-        private readonly string _webSocketUrl;
         private readonly TestInitData _testInitData;
+        private readonly GameDataInit m_GameData;
+        private readonly bool m_IsTest;
 
-        /// <summary>
-        ///  打开客户端时首先调用数据初始化命令
-        /// </summary>
-        /// <param name="gameName"></param>
-        /// <param name="gamePlatform"></param>
-        /// <param name="httpUrl"></param>
-        /// <param name="webSocketUrl"></param>
-        /// <param name="testInitData"></param>
-        public GameInitCmd(string gameName, GamePlatformType gamePlatform, string httpUrl, string webSocketUrl,
-            TestInitData testInitData = null)
+
+        public GameInitCmd(GameDataInit gameData, TestInitData testInitData, bool isTest)
         {
-            _gameName = gameName;
-            _gamePlatform = gamePlatform;
-            _httpUrl = httpUrl;
-            _webSocketUrl = webSocketUrl;
+            m_GameData = gameData;
             _testInitData = testInitData;
+            m_IsTest = isTest;
         }
 
         protected override void OnExecute()
         {
             var gameConfigModel = this.GetModel<IGameConfigModel>();
-            gameConfigModel.GameName = _gameName;
+            gameConfigModel.GameName = m_GameData.GameName;
             gameConfigModel.Version = Application.version;
-            gameConfigModel.GamePlatform = _gamePlatform;
-            if (_testInitData != null)
+            gameConfigModel.GamePlatform = m_GameData.GamePlatform;
+            gameConfigModel.GameExitIsRegister = m_GameData.GameExitIsRegister;
+            if (m_IsTest)
             {
                 gameConfigModel.IsTest = true;
                 gameConfigModel.HttpUrlBase = _testInitData.HttpUrlTest;
@@ -45,8 +35,8 @@ namespace DMFramework
             }
             else
             {
-                gameConfigModel.HttpUrlBase = _httpUrl;
-                gameConfigModel.WebSocketUrl = _webSocketUrl;
+                gameConfigModel.HttpUrlBase = m_GameData.HttpUrl;
+                gameConfigModel.WebSocketUrl = m_GameData.WebSocketUrl;
             }
 
             DebugCtrl.Log("游戏初始化...");

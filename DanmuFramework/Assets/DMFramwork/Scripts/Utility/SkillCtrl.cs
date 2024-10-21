@@ -153,7 +153,7 @@ public class SkillCtrl : MonoBehaviour
                 yield return null;
             }
 
-            StopCoroutine(nameof(HandleLinearProjectile));
+            StopCoroutine(nameof(HandleLinearProjectileCanBeBlocked));
             _spawnPool.Despawn(bulletTran);
         }
     }
@@ -194,7 +194,7 @@ public class SkillCtrl : MonoBehaviour
                 yield return null;
             }
 
-            StopCoroutine(nameof(HandleLinearProjectile));
+            StopCoroutine(nameof(HandleTrackingMissiles));
             _spawnPool.Despawn(bulletTran);
         }
     }

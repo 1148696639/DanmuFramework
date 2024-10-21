@@ -217,7 +217,6 @@ namespace DMFramework
             var epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
             var dateTime = epoch.AddSeconds(data.expiredTime);
             var localDateTime = dateTime.ToLocalTime();
-            Debug.Log("过期时间为：" + localDateTime.ToString("yyyy-MM-dd HH:mm:ss"));
             _expiredTime = localDateTime;
             var region = "ap-shanghai";
             var config = new CosXmlConfig.Builder()

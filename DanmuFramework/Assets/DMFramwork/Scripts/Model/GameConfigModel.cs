@@ -47,6 +47,11 @@ namespace DMFramework
         ///   web消息处理频率,0即每帧处理
         /// </summary>
         float WebMessageHandleFrequency { get; set; }
+
+        /// <summary>
+        ///  是否注册游戏退出时通知服务器
+        /// </summary>
+        bool GameExitIsRegister { get; set; }
     }
 
     public enum GamePlatformType
@@ -67,6 +72,7 @@ namespace DMFramework
         public string WebSocketUrl { get; set; }
         public GamePlatformType GamePlatform { get; set; }
         public float WebMessageHandleFrequency { get; set; }
+        public bool GameExitIsRegister { get; set; }
 
 
         protected override void OnInit()
