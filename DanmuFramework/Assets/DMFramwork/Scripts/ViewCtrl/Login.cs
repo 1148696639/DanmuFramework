@@ -95,7 +95,7 @@ namespace DMFramework
                     SetToken(
                         this.SendQuery(new GameRoomIdQuery()));
                 else
-                    StartCoroutine(GetAndSetToken("-c"));
+                    StartCoroutine(GetAndSetToken("-token="));
             }
             else if (_platform == GamePlatformType.x7)
             {
@@ -114,7 +114,7 @@ namespace DMFramework
                 if (this.SendQuery(new GameIsTestQuery()))
                     SetToken(this.SendQuery(new GameRoomIdQuery()));
                 else
-                    StartCoroutine(GetAndSetToken("-token="));
+                    StartCoroutine(GetAndSetToken("-c"));
             }
         }
 
